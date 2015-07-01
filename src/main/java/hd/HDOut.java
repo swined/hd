@@ -1,3 +1,5 @@
+package hd;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -13,11 +15,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
-import java.util.Map;
 
 public class HDOut implements Closeable {
 
-    private static String BASE = "http://hdout.tv/";
+    private static final String BASE = "http://hdout.tv/";
     private final CloseableHttpClient client = HttpClients.createDefault();
 
     public static class Episode {
@@ -39,6 +40,10 @@ public class HDOut implements Closeable {
             return String.format("[%s S%02dE%02d : %s]", title, season, episode, url);
         }
 
+        public String filename() {
+            return String.format("%s S%02dE%02d.mp4", title.replaceAll(":", "."), season, episode);
+        }
+
     }
 
     public void auth(String login, String password) throws IOException {
@@ -50,6 +55,7 @@ public class HDOut implements Closeable {
                 .build());
     }
 
+    @SuppressWarnings("unchecked")
     public Integer unseen() throws IOException, DocumentException {
         Document xml = new SAXReader().read(new StringReader(get(RequestBuilder.get().setUri(BASE + "List/my/XML/").build())));
         for (Node node : (List<Node>) xml.selectNodes("/document/fp[@id='my']/serieslist/item[@allseen='0']/episodes/eitem")) {
@@ -77,14 +83,11 @@ public class HDOut implements Closeable {
     }
 
     private String get(HttpUriRequest request) throws IOException {
-        CloseableHttpResponse response = client.execute(request);
-        try {
+        try (CloseableHttpResponse response = client.execute(request)) {
             String html = IOUtils.toString(response.getEntity().getContent());
             if (html.contains("<form id=\"loginform\""))
                 throw new IllegalStateException("not logged in");
             return html;
-        } finally {
-            response.close();
         }
     }
 
