@@ -32,7 +32,10 @@ public class Sync {
             if (unseen != null) {
                 HDOut.Episode ep = hd.episode(unseen);
                 log.info(ep.filename());
-                upload(new URL(ep.url), "/" + ep.filename());
+                if (client.getMetadata("/" + ep.filename()) == null)
+                    upload(new URL(ep.url), "/" + ep.filename());
+                else
+                    log.info("already exists");
                 hd.markAsSeen(unseen);
                 log.info("done");
             }

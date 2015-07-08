@@ -15,7 +15,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class HDOut implements Closeable {
 
