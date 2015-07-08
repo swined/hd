@@ -17,9 +17,6 @@
     <context:component-scan base-package="hd" />
 
     <bean class="hd.Sync">
-        <constructor-arg value="sw"/>
-        <constructor-arg value="JtAMONF"/>
-        <constructor-arg value="HXx54sKRTjAAAAAAAAAnWF59bqxxeB60Fa7kqxwwktyqZeRFb_ZDMRic6RM_Ywcp"/>
     </bean>
 
 </beans>
