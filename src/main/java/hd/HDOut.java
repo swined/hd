@@ -15,6 +15,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class HDOut implements Closeable {
 
@@ -57,8 +58,7 @@ public class HDOut implements Closeable {
 
     @SuppressWarnings("unchecked")
     public Integer unseen() throws IOException, DocumentException {
-        Document xml = new SAXReader().read(new StringReader(get(RequestBuilder.get().setUri(BASE + "List/my/XML/").build())));
-        for (Node node : (List<Node>) xml.selectNodes("/document/fp[@id='my']/serieslist/item[@allseen='0']/episodes/eitem")) {
+        for (Node node : (List<Node>) new SAXReader().read(new StringReader(get(RequestBuilder.get().setUri(BASE + "List/my/XML/").build()))).selectNodes("/document/fp[@id='my']/serieslist/item[@allseen='0']/episodes/eitem")) {
             Number vposp = node.numberValueOf("vposp");
             if (vposp == null || vposp.intValue() < 90)
                 return node.numberValueOf("id_episodes").intValue();
@@ -95,4 +95,5 @@ public class HDOut implements Closeable {
     public void close() throws IOException {
         client.close();
     }
+
 }

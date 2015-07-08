@@ -16,12 +16,12 @@ public class Sync {
     private final Logger log = Logger.getLogger(getClass().getName());
     private final String login;
     private final String password;
-    private final String token;
+    private final DbxClient client;
 
     public Sync(String login, String password, String token) {
         this.login = login;
         this.password = password;
-        this.token = token;
+        this.client = new DbxClient(new DbxRequestConfig("DbOut/1.0", Locale.getDefault().toString()), token);
     }
 
     @Scheduled(fixedDelay = 15 * 60 * 1000)
@@ -42,12 +42,10 @@ public class Sync {
     }
 
     private DbxEntry.File upload(URL url, String name) throws IOException, DbxException {
-        DbxRequestConfig config = new DbxRequestConfig("DbOut/1.0", Locale.getDefault().toString());
-        DbxClient client = new DbxClient(config, token);
         URLConnection conn = url.openConnection();
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(10000);
-        try (InputStream stream = url.openStream()) {
+        try (InputStream stream = conn.getInputStream()) {
             return client.uploadFile(name, DbxWriteMode.force(), -1, stream);
         }
     }
