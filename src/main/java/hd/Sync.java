@@ -3,12 +3,10 @@ package hd;
 import com.dropbox.core.*;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -39,13 +37,15 @@ public class Sync {
                 hd.markAsSeen(unseen);
                 log.info("done");
             }
+        } catch (UnknownHostException | FileNotFoundException e) {
+            log.log(Level.SEVERE, e.getMessage());
         } catch (Throwable e) {
             log.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     private Properties loadConfig() throws IOException, DbxException {
-        try (InputStream stream = new ByteArrayInputStream(loadFile("/config"))) {
+        try (InputStream stream = new ByteArrayInputStream(loadFile("/.conf"))) {
             return new Properties() {{
                 load(stream);
             }};
