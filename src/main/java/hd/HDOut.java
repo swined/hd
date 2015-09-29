@@ -25,9 +25,9 @@ public class HDOut implements Closeable {
             .create()
             .setDefaultRequestConfig(RequestConfig
                 .custom()
-                .setConnectTimeout(1000)
-                .setConnectionRequestTimeout(1000)
-                .setSocketTimeout(1000)
+                .setConnectTimeout(10000)
+                .setConnectionRequestTimeout(10000)
+                .setSocketTimeout(10000)
                 .build()
             )
             .build();
