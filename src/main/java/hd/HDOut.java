@@ -1,10 +1,12 @@
 package hd;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -19,7 +21,16 @@ import java.util.List;
 public class HDOut implements Closeable {
 
     private static final String BASE = "http://hdout.tv/";
-    private final CloseableHttpClient client = HttpClients.createDefault();
+    private final CloseableHttpClient client = HttpClientBuilder
+            .create()
+            .setDefaultRequestConfig(RequestConfig
+                .custom()
+                .setConnectTimeout(1000)
+                .setConnectionRequestTimeout(1000)
+                .setSocketTimeout(1000)
+                .build()
+            )
+            .build();
 
     public static class Episode {
 
@@ -82,6 +93,7 @@ public class HDOut implements Closeable {
     }
 
     private String get(HttpUriRequest request) throws IOException {
+
         try (CloseableHttpResponse response = client.execute(request)) {
             String html = IOUtils.toString(response.getEntity().getContent());
             if (html.contains("<form id=\"loginform\""))
