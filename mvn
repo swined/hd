@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker run -it --rm -v $(pwd):/mnt/build -u $(id -u):$(id -g) -w /mnt/build maven mvn -Duser.home=/mnt/build $@
