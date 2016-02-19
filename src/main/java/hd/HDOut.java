@@ -35,12 +35,15 @@ public class HDOut implements Closeable {
     public static class Episode {
 
         public final String title;
+        public final String name;
         public final int season;
         public final int episode;
         public final String url;
 
-        public Episode(String title, int season, int episode, String url) {
+
+        public Episode(String title, String name, int season, int episode, String url) {
             this.title = title;
+            this.name = name;
             this.season = season;
             this.episode = episode;
             this.url = url;
@@ -48,11 +51,15 @@ public class HDOut implements Closeable {
 
         @Override
         public String toString() {
-            return String.format("[%s S%02dE%02d : %s]", title, season, episode, url);
+            return String.format("[%s S%02dE%02d %s : %s]", title, season, episode, name, url);
         }
 
         public String filename() {
-            return String.format("%s S%02dE%02d.mp4", title.replaceAll(":", "."), season, episode);
+            return String.format("%s S%02dE%02d %s.mp4", fix(title), season, episode, fix(name));
+        }
+
+        private static String fix(String str) {
+            return str.replaceAll("[:\\/]", ".");
         }
 
     }
@@ -86,6 +93,7 @@ public class HDOut implements Closeable {
             throw new IllegalStateException("no money");
         return new Episode(
                 xml.valueOf("/flashdocument/item/seriesitem/etitle"),
+                xml.valueOf("/flashdocument/item/etitle"),
                 xml.numberValueOf("/flashdocument/item/snum").intValue(),
                 xml.numberValueOf("/flashdocument/item/enum").intValue(),
                 xml.valueOf("/flashdocument/item/videourl")
